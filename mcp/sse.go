@@ -318,7 +318,7 @@ type SSEClientTransport struct {
 
 	// HTTPClient is the client to use for making HTTP requests. If nil,
 	// http.DefaultClient is used.
-	HTTPClient *http.Client
+	HTTPClient HTTPClient
 }
 
 // Connect connects through the client endpoint.
@@ -393,7 +393,7 @@ func (c *SSEClientTransport) Connect(ctx context.Context) (Connection, error) {
 //   - Reads are SSE 'message' events, and pushes them onto a buffered channel.
 //   - Close terminates the GET request.
 type sseClientConn struct {
-	client      *http.Client // HTTP client to use for requests
+	client      HTTPClient // HTTP client to use for requests
 	msgEndpoint *url.URL     // session endpoint for POSTs
 	incoming    chan []byte  // queue of incoming messages
 

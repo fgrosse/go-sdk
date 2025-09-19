@@ -977,10 +977,16 @@ func (c *streamableServerConn) Close() error {
 // version of the spec.
 type StreamableClientTransport struct {
 	Endpoint   string
-	HTTPClient *http.Client
+	HTTPClient HTTPClient
 	// MaxRetries is the maximum number of times to attempt a reconnect before giving up.
 	// It defaults to 5. To disable retries, use a negative number.
 	MaxRetries int
+}
+
+// HTTPClient sends http.Requests and returns http.Responses or errors in case of failure.
+// Responses with StatusCode >= 400 are *not* considered a failure.
+type HTTPClient interface {
+	Do(*http.Request) (*http.Response, error)
 }
 
 // These settings are not (yet) exposed to the user in
@@ -1034,7 +1040,7 @@ func (t *StreamableClientTransport) Connect(ctx context.Context) (Connection, er
 
 type streamableClientConn struct {
 	url        string
-	client     *http.Client
+	client     HTTPClient
 	ctx        context.Context
 	cancel     context.CancelFunc
 	incoming   chan jsonrpc.Message
